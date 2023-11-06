@@ -1,12 +1,14 @@
 package main.activity;
 
+import jakarta.validation.Valid;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.hateoas.IanaLinkRelations;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -40,6 +42,51 @@ class ActivityController
         Activity activity = repository.findById(id)
                                       .orElseThrow(() -> new ActivityNotFoundException(id));
         return assembler.toModel(activity);
+    }
+
+    @PostMapping("/activities")
+    ResponseEntity<EntityModel<Activity>> newActivity(@RequestBody @Valid Activity activity)
+    {
+        EntityModel<Activity> entityModel = assembler.toModel(repository.save(activity));
+
+        return ResponseEntity.created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
+                             .body(entityModel);
+    }
+
+    @PutMapping("/activities/{id}")
+    ResponseEntity<?> updateActivity(@RequestBody Activity newActivity, @PathVariable Long id)
+    {
+        Optional<Activity> optionalActivity = repository.findById(id);
+
+        if (optionalActivity.isPresent())
+        {
+            Activity updatedActivity = optionalActivity.get();
+            if (newActivity.getName() != null)
+            {
+                updatedActivity.setName(newActivity.getName());
+            }
+            if (newActivity.getDescription() != null)
+            {
+                updatedActivity.setDescription(newActivity.getDescription());
+            }
+
+            EntityModel<Activity> entityModel = assembler.toModel(updatedActivity);
+
+            return ResponseEntity.created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
+                                 .body(entityModel);
+        }
+        else
+        {
+            throw new ActivityNotFoundException(id);
+        }
+    }
+
+    @DeleteMapping("/activities/{id}")
+    ResponseEntity<?> deleteActivity(@PathVariable Long id)
+    {
+        repository.deleteById(id);
+
+        return ResponseEntity.noContent().build();
     }
 
 }

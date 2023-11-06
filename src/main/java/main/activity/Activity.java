@@ -3,6 +3,7 @@ package main.activity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotBlank;
 
 import java.util.Objects;
 
@@ -12,6 +13,7 @@ class Activity
     @Id
     @GeneratedValue
     private Long id;
+    @NotBlank
     private String name;
     private String description;
 
