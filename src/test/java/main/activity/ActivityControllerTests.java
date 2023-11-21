@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
@@ -17,9 +18,11 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(ActivityController.class)
+@WithMockUser(username = "user", authorities = "USER")
 public class ActivityControllerTests
 {
     @Autowired
@@ -81,6 +84,7 @@ public class ActivityControllerTests
         given(activityRepository.save(reqActivity)).willReturn(newActivity);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/activities")
+                                              .with(csrf())
                                               .content(asJsonString(reqActivity))
                                               .contentType(MediaType.APPLICATION_JSON))
                .andExpect(status().isCreated())
@@ -93,6 +97,7 @@ public class ActivityControllerTests
     void post_returns_bad_request_if_invalid() throws Exception
     {
         mockMvc.perform(MockMvcRequestBuilders.post("/activities")
+                                              .with(csrf())
                                               .content("")
                                               .contentType(MediaType.APPLICATION_JSON))
                .andExpect(status().isBadRequest());
@@ -109,6 +114,7 @@ public class ActivityControllerTests
         assertEquals(changedActivity.getDescription(), "test");
 
         mockMvc.perform(MockMvcRequestBuilders.put("/activities/1")
+                                              .with(csrf())
                                               .content("{ \"name\": \"" + newName + "\" }")
                                               .contentType(MediaType.APPLICATION_JSON))
                .andExpect(status().isCreated())
@@ -132,6 +138,7 @@ public class ActivityControllerTests
         assertEquals(changedActivity.getDescription(), "test");
 
         mockMvc.perform(MockMvcRequestBuilders.put("/activities/1")
+                                              .with(csrf())
                                               .content("{ \"description\": \"" + newDescription + "\" }")
                                               .contentType(MediaType.APPLICATION_JSON))
                .andExpect(status().isCreated())
@@ -155,6 +162,7 @@ public class ActivityControllerTests
         assertEquals(changedActivity.getDescription(), "test");
 
         mockMvc.perform(MockMvcRequestBuilders.put("/activities/1")
+                                              .with(csrf())
                                               .content(asJsonString(newActivity))
                                               .contentType(MediaType.APPLICATION_JSON))
                .andExpect(status().isCreated())
@@ -171,6 +179,7 @@ public class ActivityControllerTests
     void update_returns_not_found_if_no_such_id() throws Exception
     {
         mockMvc.perform(MockMvcRequestBuilders.put("/activities/10")
+                                              .with(csrf())
                                               .content("{ \"name\": \"newName\" }")
                                               .contentType(MediaType.APPLICATION_JSON))
                .andExpect(status().isNotFound())
@@ -180,7 +189,8 @@ public class ActivityControllerTests
     @Test
     void delete_returns_no_content() throws Exception
     {
-        mockMvc.perform(MockMvcRequestBuilders.delete("/activities/10"))
+        mockMvc.perform(MockMvcRequestBuilders.delete("/activities/10")
+                                              .with(csrf()))
                .andExpect(status().isNoContent());
     }
 
