@@ -31,6 +31,11 @@ public class User
         this.role = role;
     }
 
+    public UserDAO mapToDAO()
+    {
+        return new UserDAO(id, username, role);
+    }
+
     public long getId()
     {
         return id;

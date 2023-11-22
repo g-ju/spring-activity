@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 public class UserController
@@ -16,16 +17,20 @@ public class UserController
     }
 
     @GetMapping("/users")
-    List<User> all()
+    List<UserDAO> all()
     {
-        return repository.findAll();
+        return repository.findAll()
+                         .stream()
+                         .map(User::mapToDAO)
+                         .collect(Collectors.toList());
     }
 
     @GetMapping("/users/{id}")
-    User one(@PathVariable Long id)
+    UserDAO one(@PathVariable Long id)
     {
-        return repository.findById(id)
-                         .orElseThrow(() -> new UserNotFoundException(id));
+        User user =  repository.findById(id)
+                               .orElseThrow(() -> new UserNotFoundException(id));
+        return user.mapToDAO();
     }
 
     @PostMapping("/users")
