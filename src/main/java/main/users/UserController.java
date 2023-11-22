@@ -1,6 +1,7 @@
 package main.users;
 
 import jakarta.validation.Valid;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -36,6 +37,7 @@ public class UserController
     @PostMapping("/users")
     void createUser(@RequestBody @Valid User user)
     {
+        user.setPwd(new BCryptPasswordEncoder().encode(user.getPwd()));
         repository.save(user);
     }
 }

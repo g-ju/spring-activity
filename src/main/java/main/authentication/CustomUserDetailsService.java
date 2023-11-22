@@ -26,7 +26,7 @@ public class CustomUserDetailsService implements UserDetailsService
 
         main.users.User user = optionalUser.get();
 
-        return User.withDefaultPasswordEncoder()
+        return User.builder()
                    .username(user.getUsername())
                    .password(user.getPwd())
                    .roles(user.getRole())
