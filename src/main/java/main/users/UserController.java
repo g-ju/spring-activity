@@ -1,6 +1,8 @@
 package main.users;
 
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,9 +39,19 @@ public class UserController
     }
 
     @PostMapping("/users")
-    void createUser(@RequestBody @Valid User user)
+    ResponseEntity<?> createUser(@RequestBody @Valid User user)
     {
         user.setPwd(passwordEncoder.encode(user.getPwd()));
         repository.save(user);
+
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @DeleteMapping("users/{id}")
+    ResponseEntity<?> deleteUser(@PathVariable long id)
+    {
+        repository.deleteById(id);
+
+        return ResponseEntity.noContent().build();
     }
 }
