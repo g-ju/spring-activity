@@ -1,7 +1,7 @@
 package main.users;
 
 import jakarta.validation.Valid;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,10 +11,12 @@ import java.util.stream.Collectors;
 public class UserController
 {
     private final UserRepository repository;
+    private final PasswordEncoder passwordEncoder;
 
-    UserController(UserRepository repository)
+    UserController(UserRepository repository, PasswordEncoder passwordEncoder)
     {
         this.repository = repository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @GetMapping("/users")
@@ -37,7 +39,7 @@ public class UserController
     @PostMapping("/users")
     void createUser(@RequestBody @Valid User user)
     {
-        user.setPwd(new BCryptPasswordEncoder().encode(user.getPwd()));
+        user.setPwd(passwordEncoder.encode(user.getPwd()));
         repository.save(user);
     }
 }
