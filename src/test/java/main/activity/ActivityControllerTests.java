@@ -194,7 +194,7 @@ public class ActivityControllerTests
                .andExpect(status().isNoContent());
     }
 
-    public static String asJsonString(final Object obj)
+    static String asJsonString(final Object obj)
     {
         try
         {
