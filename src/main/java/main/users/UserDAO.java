@@ -1,5 +1,9 @@
 package main.users;
 
-public record UserDAO(long id, String username, String role)
+import main.activity.Activity;
+
+import java.util.Set;
+
+public record UserDAO(long id, String username, String role, Set<Activity> activities)
 {
 }

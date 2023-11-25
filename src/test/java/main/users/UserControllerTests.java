@@ -1,6 +1,7 @@
 package main.users;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import main.activity.ActivityRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,8 @@ class UserControllerTests
 
     @MockBean
     private UserRepository userRepository;
+    @MockBean
+    private ActivityRepository activityRepository;
     @MockBean
     private PasswordEncoder passwordEncoder;
 

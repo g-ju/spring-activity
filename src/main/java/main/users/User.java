@@ -1,11 +1,11 @@
 package main.users;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import main.activity.Activity;
 
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "Users")
@@ -18,6 +18,12 @@ public class User
     private String username;
     private String pwd;
     private String role;
+
+    @ManyToMany
+    @JoinTable(name = "planned_activities",
+               joinColumns = @JoinColumn(name = "user_id"),
+               inverseJoinColumns = @JoinColumn(name = "activity_id"))
+    private final Set<Activity> plannedActivities = new HashSet<>();
 
     User()
     {
@@ -41,7 +47,7 @@ public class User
 
     public UserDAO mapToDAO()
     {
-        return new UserDAO(id, username, role);
+        return new UserDAO(id, username, role, plannedActivities);
     }
 
     public Long getId()
@@ -82,6 +88,16 @@ public class User
     public void setRole(String role)
     {
         this.role = role;
+    }
+
+    public Set<Activity> getPlannedActivities()
+    {
+        return plannedActivities;
+    }
+
+    public void addActivity(Activity activity)
+    {
+        plannedActivities.add(activity);
     }
 
     @Override
