@@ -53,6 +53,9 @@ class ActivityController
                              .body(entityModel);
     }
 
+    /**
+     * Update activity but only if the relevant fields are valid
+     */
     @PutMapping("/activities/{id}")
     ResponseEntity<?> updateActivity(@RequestBody Activity newActivity, @PathVariable Long id)
     {

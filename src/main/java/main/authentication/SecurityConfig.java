@@ -19,6 +19,8 @@ public class SecurityConfig
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception
     {
+        // Generally require basic authentication, but allow requests to see activities and creation of users.
+        // Admin role also required to delete activities or users.
         http.authorizeHttpRequests((authorize) -> authorize.requestMatchers(HttpMethod.GET, "/activities/**").permitAll()
                                                            .requestMatchers(HttpMethod.DELETE, "/activities/**").hasRole("ADMIN")
                                                            .requestMatchers(HttpMethod.POST, "/users/**").permitAll()
