@@ -1,20 +1,18 @@
 package main.users;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import main.activity.ActivityRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.Collections;
+import java.util.HashSet;
 
 import static org.mockito.BDDMockito.given;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -28,19 +26,15 @@ class UserControllerTests
     private MockMvc mockMvc;
 
     @MockBean
-    private UserRepository userRepository;
-    @MockBean
-    private ActivityRepository activityRepository;
-    @MockBean
-    private PasswordEncoder passwordEncoder;
+    private UserService userService;
 
     @BeforeEach
     void setUp()
     {
-        User user = new User(1L, "testUser", "testpass", "TEST_ROLE");
+        UserDAO dao = new UserDAO(1L, "testUser", "TEST_ROLE", new HashSet<>());
 
-        given(userRepository.findById(1L)).willReturn(Optional.of(user));
-        given(userRepository.findAll()).willReturn(List.of(user));
+        given(userService.getAllUsers()).willReturn(Collections.singletonList(dao));
+        given(userService.getUserById(1L)).willReturn(dao);
     }
 
     @Test
@@ -68,6 +62,8 @@ class UserControllerTests
     @Test
     void get_by_id_returns_not_found_if_no_such_id() throws Exception
     {
+        given(userService.getUserById(10L)).willThrow(new UserNotFoundException(10L));
+
         mockMvc.perform(MockMvcRequestBuilders.get("/users/10"))
                .andExpect(status().isNotFound())
                .andExpect(content().string("Could not find User 10"));
@@ -79,7 +75,7 @@ class UserControllerTests
         String newUsername = "newUser";
         String newPwd = "newpass";
         String newRole = "NEW_ROLE";
-        User reqUser = new User(null, newUsername, newPwd, newRole);
+        User reqUser = new User(1L, newUsername, newPwd, newRole);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/users")
                                               .with(csrf())
