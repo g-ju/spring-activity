@@ -38,7 +38,7 @@ public class User
         this.role = role;
     }
 
-    User(String username, String pwd, String role)
+    public User(String username, String pwd, String role)
     {
         this.username = username;
         this.pwd = pwd;

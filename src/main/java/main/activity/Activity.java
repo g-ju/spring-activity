@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.PreRemove;
 import jakarta.validation.constraints.NotBlank;
 import main.users.User;
 
@@ -38,7 +39,7 @@ public class Activity
         this.description = description;
     }
 
-    Activity(String name, String description)
+    public Activity(String name, String description)
     {
         this.name = name;
         this.description = description;
@@ -77,6 +78,12 @@ public class Activity
     public Set<User> getUsers()
     {
         return users;
+    }
+
+    @PreRemove
+    private void removeActivityFromUsers()
+    {
+        users.forEach(user -> user.getPlannedActivities().remove(this));
     }
 
     @Override
