@@ -2,7 +2,6 @@ package main.authentication;
 
 import main.users.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -26,10 +25,6 @@ public class CustomUserDetailsService implements UserDetailsService
 
         main.users.User user = optionalUser.get();
 
-        return User.builder()
-                   .username(user.getUsername())
-                   .password(user.getPwd())
-                   .roles(user.getRole())
-                   .build();
+        return new CustomUserDetails(user);
     }
 }

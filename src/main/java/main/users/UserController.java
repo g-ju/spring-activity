@@ -3,6 +3,7 @@ package main.users;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -38,8 +39,12 @@ public class UserController
                              .body(user.mapToDAO());
     }
 
+    /**
+     * Only allow the user with the same id as in the endpoint to add activities
+     */
+    @PreAuthorize("principal.getId() == #userId")
     @PutMapping("/users/{userId}/activities/{activityId}")
-    UserDAO addActivityForUser(@PathVariable Long userId, @PathVariable Long activityId)
+    UserDAO addActivityForUser(@PathVariable("userId") Long userId, @PathVariable Long activityId)
     {
         return service.addActivityForUser(userId, activityId);
     }
