@@ -26,6 +26,11 @@ The application is initially loaded with two users and two activities. The users
 - An admin, with both username and password being "admin"
 - A user, with username "user" and password "password"
 
+To run tests:
+```bash
+  mvn test
+```
+
 
 ## API Reference
 
